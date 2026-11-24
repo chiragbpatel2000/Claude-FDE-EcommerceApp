@@ -10,13 +10,17 @@ export default function ProductDetail() {
   const [product, setProduct] = useState(undefined);
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
+  const [loadError, setLoadError] = useState(null);
 
   useEffect(() => {
     let live = true;
-    fetchProduct(id).then((p) => live && setProduct(p));
+    fetchProduct(id)
+      .then((p) => live && setProduct(p))
+      .catch((e) => live && setLoadError(e.message));
     return () => { live = false; };
   }, [id]);
 
+  if (loadError) return <p className="empty">Could not load product: {loadError}</p>;
   if (product === undefined) return <p className="empty">Loading…</p>;
   if (product === null)
     return <p className="empty">Product not found. <Link to="/">Back to shop</Link></p>;
